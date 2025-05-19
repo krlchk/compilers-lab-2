@@ -81,6 +81,7 @@ using utils::nl;
 
 %token <Symbol> ID "id"
 %token <Symbol> STRING "string"
+%token <int> INT "integer"
 
 // Declare the nonterminals types
 
@@ -96,6 +97,7 @@ using utils::nl;
 %type <std::vector<Expr *>> arguments nonemptyarguments;
 
 %type <Expr *> program;
+%type <Expr *> intExpr;
 
 %type <boost::optional<Symbol>> typeannotation;
 
@@ -128,6 +130,7 @@ expr: stringExpr { $$ = $1; }
    | forExpr { $$ = $1; }
    | breakExpr { $$ = $1; }
    | letExpr { $$ = $1; }
+   | intExpr { $$ = $1; }
 ;
 
 varDecl: VAR ID typeannotation ASSIGN expr
@@ -142,6 +145,10 @@ funcDecl: FUNCTION ID LPAREN params RPAREN typeannotation EQ expr
 
 stringExpr: STRING
   { $$ = new StringLiteral(@1, $1); }
+;
+
+intExpr: INT
+  { $$ = new IntegerLiteral(@1, $1); }
 ;
 
 var : ID

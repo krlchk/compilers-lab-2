@@ -87,6 +87,18 @@ var      return yy::tiger_parser::make_VAR(loc);
  /* Identifiers */
 {id}       return yy::tiger_parser::make_ID(Symbol(yytext), loc);
 
+[0-9]+ {
+  if (yytext[0] == '0' && yyleng > 1)
+    utils::error(loc, "leading zeros are not allowed");
+
+  errno = 0;
+  long n = strtol(yytext, nullptr, 10);
+  if (errno == ERANGE || n > TIGER_INT_MAX)
+    utils::error(loc, "integer constant out of range");
+
+  return yy::tiger_parser::make_INT(n, loc);
+}
+
  /* Strings */
 \" {BEGIN(STRING); string_buffer.clear();}
 
