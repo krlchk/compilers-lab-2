@@ -98,6 +98,7 @@ using utils::nl;
 
 %type <Expr *> program;
 %type <Expr *> intExpr;
+%type <Expr *> ifThenExpr;
 
 %type <boost::optional<Symbol>> typeannotation;
 
@@ -136,6 +137,7 @@ expr: stringExpr { $$ = $1; }
    | breakExpr { $$ = $1; }
    | letExpr { $$ = $1; }
    | intExpr { $$ = $1; }
+   | ifThenExpr { $$ = $1; }
 ;
 
 varDecl: VAR ID typeannotation ASSIGN expr
@@ -154,6 +156,17 @@ stringExpr: STRING
 
 intExpr: INT
   { $$ = new IntegerLiteral(@1, $1); }
+;
+
+ifThenExpr:
+    IF expr THEN expr ELSE expr
+    {
+      $$ = new IfThenElse(@1, $2, $4, $6);
+    }
+  | IF expr THEN expr
+    {
+      $$ = new IfThenElse(@1, $2, $4, new Sequence(nl, {}));
+    }
 ;
 
 var : ID
